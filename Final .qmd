@@ -1,0 +1,137 @@
+---
+title: "The final"
+author: "Roksana Shiran"
+date: "`r date()`"
+format:
+  html:
+    toc: true
+    code-fold: show
+    code-tools: true
+    df-print: paged
+    embed-resources: true
+  pdf:
+    toc: true
+  docx:
+    toc: true
+---
+
+```{r}
+#| output: false
+#| message: true 
+# Load libraries
+library(here)
+library(tidyverse)
+library(lubridate)
+library(unibeCols)
+library(readxl)
+```
+
+##introduction
+
+The aim to visualize the random data of different occupation and income and age in Canada. 
+
+
+##data 
+
+Random data collected from Generatedata.com [https://generatedata.com/]
+ 
+
+```{r, echo=FALSE}
+#| output: false
+# Read data 
+Book1 <- readxl::read_excel("/Users/roksanashiran/Desktop/course/Book1.xlsx", skip = 1)
+
+# Convert 'Experience (Years)' to numeric
+Book1$`Experience (Years)` <- as.numeric(as.character(Book1$`Experience (Years)`))
+
+# Check and remove NAs
+Book1 <- filter(Book1, !is.na(`Experience (Years)`))
+# Display a summary of the data
+summary(Book1)
+# Plotting the distribution of experience
+ggplot(Book1, aes(x = `Experience (Years)`)) +
+  geom_histogram(binwidth = 1, fill = "blue") +
+  labs(title = "Distribution of Experience Years", x = "Years of Experience", y = "Count")
+# Set the experience window
+window_start <- 0
+window_end <- 10
+
+# Filter data
+filtered_data <- Book1 %>%
+  filter(`Experience (Years)` >= window_start & `Experience (Years)` <= window_end)
+
+# Display the head of the filtered data
+head(filtered_data)
+```
+
+```{r,echo=FALSE}
+library(dplyr)
+summary_table <- Book1 %>%
+  group_by(Occupation) %>%
+  summarize(
+    Average_Experience = mean(`Experience (Years)`, na.rm = TRUE),
+    Median_Experience = median(`Experience (Years)`, na.rm = TRUE),
+    Average_Age = mean(Age, na.rm = TRUE),
+    Median_Age = median(Age, na.rm = TRUE),
+    Count = n()
+  )
+print(summary_table)
+```
+
+
+
+```{r,echo=FALSE}
+library(ggplot2)
+ggplot(Book1, aes(x = `Experience (Years)`, y = Age, color = Occupation)) +
+  geom_point(alpha = 0.6) +
+  labs(title = "Experience Years vs. Age by Occupation",
+       x = "Years of Experience",
+       y = "Age") +
+  theme_minimal()
+
+# Box plot for Experience by Occupation
+ggplot(Book1, aes(x = Occupation, y = `Experience (Years)`, fill = Occupation)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Experience Years by Occupation",
+       x = "Occupation",
+       y = "Years of Experience") +
+  theme_minimal()
+
+# Box plot for Age by Occupation
+ggplot(Book1, aes(x = Occupation, y = Age, fill = Occupation)) +
+  geom_boxplot() +
+  labs(title = "Distribution of Age by Occupation",
+       x = "Occupation",
+       y = "Age") +
+theme_minimal()
+```
+```{r, echo=FALSE}
+ggplot(Book1, aes(x = `Experience (Years)`, y = Age, color = Occupation)) +
+geom_col(alpha = 0.6) +
+  labs(title = "Experience Years vs. Age by Occupation",
+       x = "Years of Experience",
+       y = "Age") +
+  theme_minimal()
+```
+
+```{r,echo=FALSE}
+ggplot(Book1, aes(x = `Experience (Years)`, y = Age, color = Occupation)) +
+  geom_abline(alpha = 0.6) +
+  labs(title = "Experience Years vs. Age by Occupation",
+       x = "Years of Experience",
+       y = "Age") +
+  theme_minimal()
+```
+```{r, echo=FALSE}
+ggplot(Book1, aes(x = `Experience (Years)`, y = Age, color = Occupation)) +
+  geom_area(alpha=0.6) +  # Use geom_point() for scatter plots
+  labs(title = "Experience Years vs. Age by Occupation",
+       x = "Years of Experience",
+       y = "Age") +
+  theme_minimal()
+
+
+```
+
+##conclution
+This analysis has elucidated significant trends within the workforce regarding experience years, age, and occupation in Canada. 
